@@ -169,9 +169,9 @@ for name, dfc in data_all.items():
     dfc = dfc.dropna(subset=["Close"])
     if dfc.empty:
         continue
-    returns = dfc.groupby("Year").agg(lambda x: (x.iloc[-1] / x.iloc[0] - 1) * 100)[["Close"]]
-    returns.columns = [name]  # Rename 'Close' column to company name
-    annual_returns = annual_returns.join(returns, how='outer')
+    returns = dfc.groupby("Year")["Close"].apply(lambda x: (x.iloc[-1] / x.iloc[0] - 1) * 100)
+    returns = returns.to_frame(name=name)
+    annual_returns = annual_returns.join(returns, how="outer")
 
 
 best_performers = annual_returns.idxmax(axis=1)
